@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String @id @default(auto()) @map("_id") @db.ObjectId
+  name           String @unique
+  email          String @unique
+  hashedPassword String
+}
+
+model Category {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  category  String   @unique
+  createdAt DateTime @default(now())
+}
+
+type imagesProps {
+  id  String
+  url String
+}
+
+model Product {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  images      imagesProps[]
+  name        String        @unique
+  description String
+  category    String
+  variations  String[]
+  price       Float
+  createdAt   DateTime      @default(now())
+}
+
+model Phone {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  number    String   @unique
+  createdAt DateTime @default(now())
+}
+
+model Coupon {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String   @unique
+  discount  Float
+  createdAt DateTime @default(now())
+}
+
+model Neighborhood {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String   @unique
+  price     Int
+  createdAt DateTime @default(now())
+}
+
+model Otp {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  otp       String
+  for       String   @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
