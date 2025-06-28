@@ -123,12 +123,6 @@ export const ProductCard = ({ products }: ProductCardProps) => {
                     onClick={(e) => {
                       e.preventDefault();
                     }}
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                    }}
-                    onTouchStart={(e) => {
-                      e.preventDefault();
-                    }}
                     className="flex items-center gap-1"
                   >
                     {product.variations.length > 0 && (

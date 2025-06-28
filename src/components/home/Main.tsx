@@ -97,8 +97,13 @@ export const Main = ({ products, categories, phone }: MainProps) => {
 
   // Controla a quantidade de produtos por página de acordo com o tamanho da tela
   const handleWindowResize = useCallback(() => {
-    if (window.innerWidth >= 640) setProductsPerPage(12);
-    if (window.innerWidth < 350) setProductsPerPage(8);
+    if (window.innerWidth < 640) {
+      setProductsPerPage(8);
+      return;
+    }
+
+    setProductsPerPage(12);
+    // if (window.innerWidth < 350) setProductsPerPage(8);
   }, []);
 
   useEffect(() => {
@@ -183,7 +188,10 @@ export const Main = ({ products, categories, phone }: MainProps) => {
         <Input
           placeholder="Pesquisar"
           type="text"
-          onChange={(event) => setSearch(event.target.value)}
+          onChange={(event) => {
+            setSearch(event.target.value);
+            setCurrentPage(1);
+          }}
           className="max-w-80"
         />
 
