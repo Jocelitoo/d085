@@ -29,6 +29,7 @@ import { getCoupon } from "@/actions/couponActions";
 import { toast } from "sonner";
 import { checkoutFormSchema } from "@/lib/schema";
 import { redirect } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 interface CheckoutFormProps {
   neighborhoods: {
@@ -46,6 +47,7 @@ export const CheckoutForm = ({ neighborhoods, wpp }: CheckoutFormProps) => {
   const [neighborhoodName, setNeighborhoodName] = useState("");
   const [deliveryPrice, setDeliveryPrice] = useState(0);
   const [couponName, setCouponName] = useState("");
+  const [loading, setLoading] = useState(false);
   const [discount, setDiscount] = useState(1);
   const isMobile = /Android|iPhone|iPad|iPod/.test(navigator.userAgent); // Verificar se o usuário está acessando no desktop ou celular
 
@@ -140,6 +142,24 @@ Total: R$ ${((Number(subtotal) * discount + deliveryPrice) / 100).toFixed(2)}`;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [neighborhoodName]);
+
+  const handlerGetCoupon = () => {
+    setLoading(true);
+
+    getCoupon(couponName)
+      .then((response) => {
+        setDiscount(response);
+        toast("Desconto aplicado", {
+          style: { backgroundColor: "#07bc0c", color: "#000" },
+        });
+      })
+      .catch((error) =>
+        toast(error.message, {
+          style: { backgroundColor: "#e74c3c", color: "#000" },
+        })
+      )
+      .finally(() => setLoading(false));
+  };
 
   return (
     <div className="mt-8 px-4">
@@ -333,23 +353,18 @@ Total: R$ ${((Number(subtotal) * discount + deliveryPrice) / 100).toFixed(2)}`;
             <Button
               type="button"
               size={"lg"}
+              disabled={loading}
               className="cursor-pointer"
-              onClick={() =>
-                getCoupon(couponName)
-                  .then((response) => {
-                    setDiscount(response);
-                    toast("Desconto aplicado", {
-                      style: { backgroundColor: "#07bc0c", color: "#000" },
-                    });
-                  })
-                  .catch((error) =>
-                    toast(error.message, {
-                      style: { backgroundColor: "#e74c3c", color: "#000" },
-                    })
-                  )
-              }
+              onClick={handlerGetCoupon}
             >
-              Aplicar cupom
+              {loading ? (
+                <>
+                  <Loader2 className="animate-spin" />
+                  Verificando...
+                </>
+              ) : (
+                "Aplicar cupom"
+              )}
             </Button>
           </div>
 

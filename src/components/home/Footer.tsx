@@ -10,14 +10,20 @@ export const Footer = () => {
 
       <div className="flex flex-col gap-4 sm:flex-row">
         <Button variant={"outline"} size={"lg"} asChild>
-          <Link href={""} target="_blank" rel="noopener noreferrer">
+          <Link
+            href={
+              "https://www.instagram.com/d085suplementos?igsh=Zmo1M2FvNWwxdmth"
+            }
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             Instagram
           </Link>
         </Button>
 
         <Button variant={"outline"} size={"lg"} asChild>
           <Link
-            href={"https://maps.app.goo.gl/sfRuu6g1NhEH78zJ9"}
+            href={"https://maps.app.goo.gl/3D8DiYEzbhFzB1MH7"}
             target="_blank"
             rel="noopener noreferrer"
           >
