@@ -34,10 +34,12 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
         {product.category}
       </p>
 
-      <VariationRadio
-        product={product}
-        setProductVariation={setProductVariation}
-      />
+      {product.variations.length > 0 && (
+        <VariationRadio
+          product={product}
+          setProductVariation={setProductVariation}
+        />
+      )}
 
       <Separator />
 

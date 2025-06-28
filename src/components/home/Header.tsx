@@ -32,12 +32,16 @@ export const Header = () => {
     0
   );
 
-  const deleteProduct = (productId: string) => {
-    // Pegar os produtos que NÃO tem o id e size do produto à ser deletado
+  const deleteProduct = (productId: string, productVariation?: string) => {
+    // Pegar os produtos que NÃO tem o mesmo id e size do produto à ser deletado
     const updatedCartProducts = cartProducts.filter((cartProduct) => {
-      if (cartProduct.id !== productId) {
+      if (cartProduct.id === productId) {
+        if (cartProduct.variation === productVariation) return;
+
         return cartProduct;
       }
+
+      return cartProduct;
     });
 
     // Salvar as alterações
@@ -50,17 +54,24 @@ export const Header = () => {
     setCartProducts([]); // Usamos para vermos a mudança em tempo real
   };
 
-  const alterQuantity = (productId: string, newQuantity: number) => {
+  const alterQuantity = (
+    productId: string,
+    newQuantity: number,
+    productVariation?: string
+  ) => {
     // Se a nova quantidade do produto for 0, então remova ele
     if (newQuantity <= 0) {
-      deleteProduct(productId);
+      deleteProduct(productId, productVariation);
       return;
     }
 
     // Atualizar o produto com a nova quantidade
     const updatedCartProducts = cartProducts.map((cartProduct) => {
       // Verificar se o produto que está sofrendo map tem o mesmo id e size do produto que vai receber alteração
-      if (cartProduct.id === productId) {
+      if (
+        cartProduct.id === productId &&
+        cartProduct.variation === productVariation
+      ) {
         // Clonar o produto e atualizar seus dados que sofreram alteração
         const updatedProduct = {
           ...cartProduct,
@@ -178,7 +189,8 @@ export const Header = () => {
                                 onClick={() => {
                                   alterQuantity(
                                     cartProduct.id,
-                                    cartProduct.quantity - 1
+                                    cartProduct.quantity - 1,
+                                    cartProduct.variation
                                   );
                                 }}
                               >
@@ -193,7 +205,8 @@ export const Header = () => {
                                 onChange={(event) =>
                                   alterQuantity(
                                     cartProduct.id,
-                                    Number(event.target.value)
+                                    Number(event.target.value),
+                                    cartProduct.variation
                                   )
                                 }
                                 className="max-w-16"
@@ -205,7 +218,8 @@ export const Header = () => {
                                 onClick={() => {
                                   alterQuantity(
                                     cartProduct.id,
-                                    cartProduct.quantity + 1
+                                    cartProduct.quantity + 1,
+                                    cartProduct.variation
                                   );
                                 }}
                               >
