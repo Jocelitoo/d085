@@ -75,7 +75,7 @@ export const ProductCard = ({
               }}
               className="flex items-center gap-1"
             >
-              {selectedVariation && (
+              {product.variations.length > 0 && (
                 <Select
                   defaultValue={selectedVariation}
                   onValueChange={(value) => setSelectedVariation(value)}
