@@ -49,7 +49,15 @@ export const CheckoutForm = ({ neighborhoods, wpp }: CheckoutFormProps) => {
   const [couponName, setCouponName] = useState("");
   const [loading, setLoading] = useState(false);
   const [discount, setDiscount] = useState(1);
-  const isMobile = /Android|iPhone|iPad|iPod/.test(navigator.userAgent); // Verificar se o usuário está acessando no desktop ou celular
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Verificar se o usuário está acessando no desktop ou celular
+  useEffect(() => {
+    const userAgent =
+      typeof navigator === "undefined" ? "" : navigator.userAgent;
+    const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(userAgent);
+    setIsMobile(isMobileDevice);
+  }, []);
 
   // Calcular o VALOR total dos produtos no carrinho
   const subtotal = cartProducts.reduce(

@@ -33,21 +33,20 @@ export const Main = ({ products, categories, phone }: MainProps) => {
   const [productsPerPage, setProductsPerPage] = useState(12); // Produtos por página
   const [search, setSearch] = useState(""); // Texto digitado para pesquisar produtos
   const [selectedCategory, setSelectedCategory] = useState("todos"); // Usado para identificar qual categória foi escolhida
+  const [isClient, setIsClient] = useState(false); // Usado para evitar erro de hidratação no next.js
+  const [isMobile, setIsMobile] = useState(false);
+
   const { cartProducts, setCartProducts } = useCartContext();
 
   const router = useRouter();
 
-  // const isMobile = /Android|iPhone|iPad|iPod/.test(navigator.userAgent); // Verificar se o usuário está acessando no desktop ou celular
-
-  const [isMobile, setIsMobile] = useState(false);
-
+  // Verificar se o usuário está acessando no desktop ou celular
   useEffect(() => {
     const userAgent =
       typeof navigator === "undefined" ? "" : navigator.userAgent;
     const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(userAgent);
     setIsMobile(isMobileDevice);
   }, []);
-  const [isClient, setIsClient] = useState(false); // Usado para evitar erro de hidratação no next.js
 
   useEffect(() => {
     setIsClient(true);
