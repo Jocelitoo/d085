@@ -1,7 +1,6 @@
 "use client";
 
-import { ProductCard } from "@/components/ProductCard";
-import { ProductProps } from "@/utils/props";
+import { CartProductProps, ProductProps } from "@/utils/props";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Input } from "../ui/input";
 import {
@@ -19,6 +18,8 @@ import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
+import { useCartContext } from "@/hooks/CartContextProvider";
+import { ProductCard } from "../ProductCard";
 
 interface MainProps {
   products: ProductProps[];
@@ -32,8 +33,16 @@ export const Main = ({ products, categories, phone }: MainProps) => {
   const [productsPerPage, setProductsPerPage] = useState(12); // Produtos por página
   const [search, setSearch] = useState(""); // Texto digitado para pesquisar produtos
   const [selectedCategory, setSelectedCategory] = useState("todos"); // Usado para identificar qual categória foi escolhida
+  const { cartProducts, setCartProducts } = useCartContext();
+
   const router = useRouter();
+
   const isMobile = /Android|iPhone|iPad|iPod/.test(navigator.userAgent); // Verificar se o usuário está acessando no desktop ou celular
+  const [isClient, setIsClient] = useState(false); // Usado para evitar erro de hidratação no next.js
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Controlar a ordem que os produtos vão aparecer
   const sortedProducts = useMemo(() => {
@@ -143,6 +152,51 @@ export const Main = ({ products, categories, phone }: MainProps) => {
     return Array.from({ length }, (_, i) => adjustedStart + i);
   }, [currentPage, totalPages]);
 
+  const addToCart = (product: ProductProps, productVariation: string) => {
+    // Criar o novo produto à ser adicionado no carrinho de compras
+    const newCartProduct = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: 1,
+      variation: productVariation || "",
+      imageUrl: product.images[0].url,
+    };
+
+    // Verificar se já existe no sessionStorage o armazenamento 'cart'
+    const cartExist = sessionStorage.getItem("cart");
+
+    if (cartExist) {
+      const cart: CartProductProps[] = JSON.parse(cartExist); // Pegar os dados armazenados no 'cart'
+
+      let productExistInCart = false;
+
+      cart.map((cartProduct) => {
+        if (
+          cartProduct.id === newCartProduct.id &&
+          cartProduct.variation === newCartProduct.variation
+        ) {
+          cartProduct.quantity += newCartProduct.quantity; // Nova quantidade do produto
+
+          sessionStorage.setItem("cart", JSON.stringify(cart)); // Atualizar no sessionStorage o 'cart'
+          setCartProducts(cart);
+
+          productExistInCart = true;
+        }
+      });
+
+      if (productExistInCart) return; // Termina aqui a function se o produto já estiver no carrinho
+
+      cart.push(newCartProduct); // Adicionar o novo produto ao 'cart'
+
+      sessionStorage.setItem("cart", JSON.stringify(cart)); // Atualizar no sessionStorage o 'cart'
+      setCartProducts(cart);
+    } else {
+      sessionStorage.setItem("cart", JSON.stringify([newCartProduct])); // Criar o armazenamento 'cart' no sessionStorage
+      setCartProducts([newCartProduct]);
+    }
+  };
+
   return (
     <main className="grow space-y-8 px-4 sm:px-8 lg:px-20">
       <ScrollArea type="always" className="whitespace-nowrap">
@@ -215,7 +269,19 @@ export const Main = ({ products, categories, phone }: MainProps) => {
         <p className="text-center">Nenhum produto encontrado</p>
       ) : (
         <>
-          <ProductCard products={formatedProducts} />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {formatedProducts.map((formatedProduct, index) => {
+              return (
+                <ProductCard
+                  key={index}
+                  product={formatedProduct}
+                  cartProducts={cartProducts}
+                  isClient={isClient}
+                  addToCart={addToCart}
+                />
+              );
+            })}
+          </div>
 
           <div className="flex justify-center gap-4 my-4">
             <Button
